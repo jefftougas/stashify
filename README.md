@@ -1,4 +1,4 @@
-stashify
+Stashify
 ========
 
 Atlassian Stash CLI interface
