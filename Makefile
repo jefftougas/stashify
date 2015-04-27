@@ -6,12 +6,15 @@ ECHO=echo
 
 DEPS=$(go list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
 
-all: deps
+all: deps format test build
+
+build:
 	@mkdir -p bin/
-	@$(ECHO) "$(OK_COLOR)==> Building$(NO_COLOR)"
+	@$(ECHO) "$(OK_COLOR)==> Building...$(NO_COLOR)"
 	@go install
 
 format:
+	@$(ECHO) "$(OK_COLOR)==> Formatting...$(NO_COLOR)"
 	go fmt
 
 deps:
@@ -31,4 +34,4 @@ updatedeps:
 	@go get -d -v -u ./..
 	@echo $(DEPS) | xargs -n1 go get -d -u
 
-.PHONY: all clean deps format test updatedeps
+.PHONY: all clean deps format test updatedeps build
