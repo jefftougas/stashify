@@ -1,2 +1,10 @@
----
 language: go
+addons:
+  artifacts:
+    key: AKIAJ4FZVZXTBDSZF2RA
+    secret:
+      secure: EcZAnKJR5m1SkvMPfBKck/sNVyB8nP1+PhV14t7bi9veaGvfxKYk5oHZkkFvuFAaWIShbS4lMct3ZRa7fLnqYpDAIWIJ2mUa4TUJPmgmhODBrjnVbeu21/VELhrdTEPzAYtNuAOtZjIVjc65x1OUM8YAy2NpJHNdBQU368n6TqQ=
+    bucket: stashify-artifacts
+    paths:
+        - "$GOPATH/bin/stashify"
+    debug: true
