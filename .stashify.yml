@@ -1,7 +1,8 @@
 ---
 url: 'http://localhost:7990'
-project: 'test'
+project: 'Telstra Online Project'
+key: 'TOP'
 repository: 'test'
-users:
+members:
     - "d674050"
     - "d328626"

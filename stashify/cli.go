@@ -10,7 +10,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+var Config = viper.New()
 var Project stash.StashProject
+
+/* Flag / options values */
+var projectName string
+var projectKey string
 
 var rootCmd = &cobra.Command{
 	Use:   "stashify",
@@ -25,16 +30,14 @@ var project = &cobra.Command{
 	Long:  "Project related management tasks, listing of projects, creation, etc",
 }
 
-var projectNew = &cobra.Command{
-	Use:   "new [PROJECT NAME]",
+var projectCreate = &cobra.Command{
+	Use:   "create [PROJECT NAME]",
 	Short: "Create a new Stash project",
 	Long:  "Create a project to house repositories inside Atlassian Stash",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args)
+		Project.Create(projectName, projectKey)
 	},
 }
-
-var Config = viper.New()
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -51,9 +54,8 @@ func initConfig() {
 		log.Error(err)
 	}
 
-	fmt.Println(Config.Get("url"))
-	fmt.Println(Project.Name)
-
+	log.Debug("Loaded Stashify project from", Config.ConfigFileUsed())
+	log.Debug(fmt.Sprintf("Stashify project looks like: %+v", Project))
 }
 
 func rootRun(cmd *cobra.Command, args []string) {
@@ -62,9 +64,16 @@ func rootRun(cmd *cobra.Command, args []string) {
 
 func addCommands() {
 	rootCmd.AddCommand(project)
+	/* Global Options */
+	rootCmd.PersistentFlags().StringVarP(&Project.Username, "username", "u", "", "Username for Stash")
+	rootCmd.PersistentFlags().StringVarP(&Project.Password, "password", "p", "", "Password for Stash")
+
+	/* Project Options */
+	project.PersistentFlags().StringVarP(&projectName, "name", "n", "", "New project name, defaults to .stashify.yml project name")
+	project.PersistentFlags().StringVarP(&projectKey, "key", "k", "", "New project key, defaults to .stashify.yml project key")
 
 	/* Project Related Sub-Commands */
-	project.AddCommand(projectNew)
+	project.AddCommand(projectCreate)
 }
 
 func Execute() {
