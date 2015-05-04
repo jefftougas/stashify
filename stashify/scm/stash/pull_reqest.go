@@ -5,6 +5,10 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+type StashPullRequestResponse struct {
+	Id int `json:"id"`
+}
+
 type StashPullRequest struct {
 	Project     StashProject           `json:"-"`
 	Notifier    interface{}            `json:"-"`
@@ -37,12 +41,14 @@ type StashPullRequestProject struct {
 	Key string `json:"key"`
 }
 
-func (pr StashPullRequest) Create() error {
+func (pr StashPullRequest) Create(title string, description string) error {
 	log.Debug("Attempting to create a new pull request")
 
 	pr.State = "OPEN"
 	pr.Open = true
 	pr.Closed = false
+	pr.Title = title
+	pr.Description = description
 
 	requestUrl := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/pull-requests", pr.Project.Key, pr.Project.Repository)
 	req := pr.Project.Request(requestUrl)
@@ -73,9 +79,11 @@ func (pr StashPullRequest) Create() error {
 
 	req.Body = pr
 	res, err := req.Do()
+	defer res.Body.Close()
 
 	if err != nil {
 		log.Error(err.Error())
+		return err
 	}
 
 	if res.Response.StatusCode != 201 {
@@ -90,7 +98,10 @@ func (pr StashPullRequest) Create() error {
 	}
 
 	log.Debug(fmt.Sprintf("%+v", res.Response))
-	//output, _ := json.MarshalIndent(pr, "", "    ")
-	//os.Stdout.Write(output)
+
+	responseData := StashPullRequestResponse{}
+	res.Body.FromJsonTo(&responseData)
+	log.Info(fmt.Sprintf("Pull request created, view it at: %s/projects/%s/repos/%s/pull-requests/%d", pr.Project.Uri, pr.Project.Key, pr.Project.Repository, responseData.Id))
+
 	return nil
 }

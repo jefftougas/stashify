@@ -16,6 +16,8 @@ var Project stash.StashProject
 /* Flag / options values */
 var projectName string
 var projectKey string
+var pullRequestCreateTitle string
+var pullRequestCreateDescription string
 
 var rootCmd = &cobra.Command{
 	Use:   "stashify",
@@ -42,7 +44,7 @@ var pullRequestCreate = &cobra.Command{
 	Long:  "Create a new pull request on the current branch by default",
 	Run: func(cmd *cobra.Command, args []string) {
 		pr := stash.StashPullRequest{Project: Project}
-		pr.Create()
+		pr.Create(pullRequestCreateTitle, pullRequestCreateDescription)
 	},
 }
 
@@ -91,6 +93,8 @@ func addCommands() {
 
 	/* Pull request related sub commands */
 	pullRequest.AddCommand(pullRequestCreate)
+	pullRequestCreate.PersistentFlags().StringVar(&pullRequestCreateTitle, "title", "t", "Title for pull request")
+	pullRequestCreate.PersistentFlags().StringVar(&pullRequestCreateDescription, "description", "d", "Pull request description")
 }
 
 func Execute() {

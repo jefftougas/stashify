@@ -82,5 +82,5 @@ func (p StashProject) CurrentBranch() (string, error) {
 	//
 	//	log.Debug("Found git branch name: ", name)
 
-	return "notifier", nil
+	return "notifiers", nil
 }
