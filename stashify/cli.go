@@ -30,6 +30,22 @@ var project = &cobra.Command{
 	Long:  "Project related management tasks, listing of projects, creation, etc",
 }
 
+var pullRequest = &cobra.Command{
+	Use:   "pr [command]",
+	Short: "Work with pull requests",
+	Long:  "Create pull requests, merge, decline etc",
+}
+
+var pullRequestCreate = &cobra.Command{
+	Use:   "create",
+	Short: "Create a new pull request",
+	Long:  "Create a new pull request on the current branch by default",
+	Run: func(cmd *cobra.Command, args []string) {
+		pr := stash.StashPullRequest{Project: Project}
+		pr.Create()
+	},
+}
+
 var projectCreate = &cobra.Command{
 	Use:   "create [PROJECT NAME]",
 	Short: "Create a new Stash project",
@@ -63,17 +79,18 @@ func rootRun(cmd *cobra.Command, args []string) {
 }
 
 func addCommands() {
-	rootCmd.AddCommand(project)
-	/* Global Options */
+	rootCmd.AddCommand(pullRequest)
 	rootCmd.PersistentFlags().StringVarP(&Project.Username, "username", "u", "", "Username for Stash")
 	rootCmd.PersistentFlags().StringVarP(&Project.Password, "password", "p", "", "Password for Stash")
 
-	/* Project Options */
+	project.AddCommand(projectCreate)
+
+	rootCmd.AddCommand(project)
 	project.PersistentFlags().StringVarP(&projectName, "name", "n", "", "New project name, defaults to .stashify.yml project name")
 	project.PersistentFlags().StringVarP(&projectKey, "key", "k", "", "New project key, defaults to .stashify.yml project key")
 
-	/* Project Related Sub-Commands */
-	project.AddCommand(projectCreate)
+	/* Pull request related sub commands */
+	pullRequest.AddCommand(pullRequestCreate)
 }
 
 func Execute() {

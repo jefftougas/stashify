@@ -1,8 +1,11 @@
 ---
 url: 'http://localhost:7990'
-project: 'Telstra Online Project'
-key: 'TOP'
-repository: 'test'
+project: 'stashify'
+key: 'STSH'
+repository: 'code'
 members:
     - "d674050"
     - "d328626"
+slack_channel: general
+
+

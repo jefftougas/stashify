@@ -1,4 +1,7 @@
 language: go
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -y libgit2
 addons:
   artifacts:
     key: AKIAJ4FZVZXTBDSZF2RA

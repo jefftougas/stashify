@@ -70,3 +70,17 @@ func (p StashProject) Request(resource string) *goreq.Request {
 	req.Accept = "application/json"
 	return req
 }
+
+func (p StashProject) CurrentBranch() (string, error) {
+	log.Debug("Retreving current branch of git repo")
+
+	//	branch := git.Branch{} name, err := branch.Name()
+	//
+	//	if err != nil {
+	//		log.Error(err.Error())
+	//	}
+	//
+	//	log.Debug("Found git branch name: ", name)
+
+	return "notifier", nil
+}
