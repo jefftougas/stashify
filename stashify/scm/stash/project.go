@@ -15,6 +15,8 @@ type StashProject struct {
 	Username   string
 	Password   string
 	Key        string
+	/* Make HTTPs request insecurely */
+	Insecure bool
 }
 
 type NewStashProject struct {
@@ -70,6 +72,7 @@ func (p StashProject) Request(resource string) *goreq.Request {
 	req := &goreq.Request{Uri: url, BasicAuthUsername: p.Username, BasicAuthPassword: p.Password}
 	req.ContentType = "application/json"
 	req.Accept = "application/json"
+	req.Insecure = p.Insecure
 	return req
 }
 

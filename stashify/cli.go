@@ -22,7 +22,7 @@ var pullRequestCreateDescription string
 var rootCmd = &cobra.Command{
 	Use:   "stashify",
 	Short: "Atlassian Stash CLI in Go",
-	Long:  "Stashify automates git workflows from the command line",
+	Long:  "Stashify helps automate git workflows from the command line",
 	Run:   rootRun,
 }
 
@@ -30,12 +30,18 @@ var project = &cobra.Command{
 	Use:   "project [command]",
 	Short: "Manage projects which house repositories",
 	Long:  "Project related management tasks, listing of projects, creation, etc",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Usage()
+	},
 }
 
 var pullRequest = &cobra.Command{
 	Use:   "pr [command]",
 	Short: "Work with pull requests",
 	Long:  "Create pull requests, merge, decline etc",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Usage()
+	},
 }
 
 var pullRequestCreate = &cobra.Command{
@@ -82,19 +88,19 @@ func rootRun(cmd *cobra.Command, args []string) {
 
 func addCommands() {
 	rootCmd.AddCommand(pullRequest)
+	rootCmd.AddCommand(project)
+	project.AddCommand(projectCreate)
+	pullRequest.AddCommand(pullRequestCreate)
+
 	rootCmd.PersistentFlags().StringVarP(&Project.Username, "username", "u", "", "Username for Stash")
 	rootCmd.PersistentFlags().StringVarP(&Project.Password, "password", "p", "", "Password for Stash")
 
-	project.AddCommand(projectCreate)
-
-	rootCmd.AddCommand(project)
 	project.PersistentFlags().StringVarP(&projectName, "name", "n", "", "New project name, defaults to .stashify.yml project name")
 	project.PersistentFlags().StringVarP(&projectKey, "key", "k", "", "New project key, defaults to .stashify.yml project key")
 
 	/* Pull request related sub commands */
-	pullRequest.AddCommand(pullRequestCreate)
-	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateTitle, "title", "t", "", "Title for pull request")
-	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateDescription, "description", "d", "", "Pull request description")
+	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateTitle, "title", "t", "", "Title for pull request, defaults to commit message title")
+	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateDescription, "description", "d", "", "Pull request description, defaults to commit message")
 }
 
 func Execute() {

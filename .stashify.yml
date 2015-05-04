@@ -1,11 +1,20 @@
 ---
+# Stash URL
 url: 'http://localhost:7990'
+
+# Project name
 project: 'stashify'
+
+# Key for project
 key: 'STSH'
+
+# Repository name uder project
 repository: 'code'
+
+# Pull request users, added to each PR for this project
 members:
     - "d674050"
     - "d328626"
-slack_channel: general
 
-
+# Make HTTPs requests secure or not
+insecure: false
