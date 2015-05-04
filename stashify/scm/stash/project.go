@@ -4,6 +4,7 @@ import (
 	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/franela/goreq"
+	"gopkg.in/libgit2/git2go.v22"
 )
 
 type StashProject struct {
@@ -39,6 +40,7 @@ func (p StashProject) Create(name string, key string) error {
 	req.Body = project
 
 	res, err := req.Do()
+	defer res.Body.Close()
 
 	if err != nil {
 		log.Error(err.Error())
@@ -69,4 +71,23 @@ func (p StashProject) Request(resource string) *goreq.Request {
 	req.ContentType = "application/json"
 	req.Accept = "application/json"
 	return req
+}
+
+func (p StashProject) CurrentRef() string {
+	log.Debug("Retreving current ref of git repo")
+
+	repo, _ := git.OpenRepository(".")
+	head, _ := repo.Head()
+
+	return head.Name()
+}
+
+func (p StashProject) CommitMessage() string {
+	log.Debug("Retreving latest commit message")
+
+	repo, _ := git.OpenRepository(".")
+	head, _ := repo.Head()
+	oid := head.Target()
+	commit, _ := repo.LookupCommit(oid)
+	return commit.Message()
 }

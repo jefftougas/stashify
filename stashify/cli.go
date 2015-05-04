@@ -16,6 +16,8 @@ var Project stash.StashProject
 /* Flag / options values */
 var projectName string
 var projectKey string
+var pullRequestCreateTitle string
+var pullRequestCreateDescription string
 
 var rootCmd = &cobra.Command{
 	Use:   "stashify",
@@ -28,6 +30,22 @@ var project = &cobra.Command{
 	Use:   "project [command]",
 	Short: "Manage projects which house repositories",
 	Long:  "Project related management tasks, listing of projects, creation, etc",
+}
+
+var pullRequest = &cobra.Command{
+	Use:   "pr [command]",
+	Short: "Work with pull requests",
+	Long:  "Create pull requests, merge, decline etc",
+}
+
+var pullRequestCreate = &cobra.Command{
+	Use:   "create",
+	Short: "Create a new pull request",
+	Long:  "Create a new pull request on the current branch by default",
+	Run: func(cmd *cobra.Command, args []string) {
+		pr := stash.StashPullRequest{Project: Project}
+		pr.Create(pullRequestCreateTitle, pullRequestCreateDescription)
+	},
 }
 
 var projectCreate = &cobra.Command{
@@ -63,17 +81,20 @@ func rootRun(cmd *cobra.Command, args []string) {
 }
 
 func addCommands() {
-	rootCmd.AddCommand(project)
-	/* Global Options */
+	rootCmd.AddCommand(pullRequest)
 	rootCmd.PersistentFlags().StringVarP(&Project.Username, "username", "u", "", "Username for Stash")
 	rootCmd.PersistentFlags().StringVarP(&Project.Password, "password", "p", "", "Password for Stash")
 
-	/* Project Options */
+	project.AddCommand(projectCreate)
+
+	rootCmd.AddCommand(project)
 	project.PersistentFlags().StringVarP(&projectName, "name", "n", "", "New project name, defaults to .stashify.yml project name")
 	project.PersistentFlags().StringVarP(&projectKey, "key", "k", "", "New project key, defaults to .stashify.yml project key")
 
-	/* Project Related Sub-Commands */
-	project.AddCommand(projectCreate)
+	/* Pull request related sub commands */
+	pullRequest.AddCommand(pullRequestCreate)
+	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateTitle, "title", "t", "", "Title for pull request")
+	pullRequestCreate.PersistentFlags().StringVarP(&pullRequestCreateDescription, "description", "d", "", "Pull request description")
 }
 
 func Execute() {
